@@ -276,7 +276,113 @@ public class dlgInversa extends javax.swing.JFrame {
     }
     
     
+ //funcion matriz inversa final
+    public double[][] matrizInversa(double[][] matriz) {
+        double det = 1 / determinante(matriz);
+        double[][] nmatriz = matrizAdjunta(matriz);
+        multiplicarMatriz(det, nmatriz);
+        return nmatriz;
+    }
+
+    //funcion matrizmultiplicar
+    public void multiplicarMatriz(double n, double[][] matriz) {
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz.length; j++) {
+                matriz[i][j] *= n;
+            }
+        }
+    }
+
+    //funcion matrizadjunta
+    public double[][] matrizAdjunta(double[][] matriz) {
+
+        double[][] matriz1 = matrizCofactores(matriz);
+
+        return matrizTranspuesta(matriz1);
+
+    }
+
+    //funcion matrizcofactores
+    public double[][] matrizCofactores(double[][] matriz) {
+        double[][] nm = new double[matriz.length][matriz.length];
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz.length; j++) {
+                double[][] det = new double[matriz.length - 1][matriz.length - 1];
+                double detValor;
+                for (int k = 0; k < matriz.length; k++) {
+                    if (k != i) {
+                        for (int l = 0; l < matriz.length; l++) {
+                            if (l != j) {
+                                int indice1 = k < i ? k : k - 1;
+                                int indice2 = l < j ? l : l - 1;
+                                det[indice1][indice2] = matriz[k][l];
+                            }
+                        }
+                    }
+                }
+                detValor = determinante(det);
+                nm[i][j] = detValor * (double) Math.pow(-1, i + j + 2);
+                System.out.println("cofactores = " + nm[i][j]);
+            }
+        }
+        return nm;
+    }
+
+    //funcion matriztranspuesta
+    public double[][] matrizTranspuesta(double[][] matriz) {
+        double[][] nuevam = new double[matriz[0].length][matriz.length];
+        for (int i = 0; i < matriz.length; i++) {
+            for (int j = 0; j < matriz.length; j++) {
+                nuevam[i][j] = matriz[j][i];
+
+            }
+        }
+        return nuevam;
+    }
+
+    //funcion matriz determinante
+    public double determinante(double[][] matriz) {
+        assert matriz != null;
+        assert matriz.length > 0;
+        assert matriz.length == matriz[0].length;
+
+        double determinante = 0.0;
+
+        int filas = matriz.length;
+        int columnas = matriz[0].length;
+
+        // Si la matriz es 1x1, el determinante es el elemento de la matriz
+        if ((filas == 1) && (columnas == 1)) {
+            return matriz[0][0];
+        }
+
+        int signo = 1;
+
+        for (int columna = 0; columna < columnas; columna++) {
+            // Obtiene el adjunto de fila=0, columna=columna, pero sin el signo.
+            double[][] submatriz = getSubmatriz(matriz, filas, columnas, columna);
+            determinante = determinante + signo * matriz[0][columna] * determinante(submatriz);
+            signo *= -1;
+        }
+
+        return determinante;
+    }
+
     
+    public static double[][] getSubmatriz(double[][] matriz, int filas, int columnas, int columna) {
+        double[][] submatriz = new double[filas - 1][columnas - 1];
+        int contador = 0;
+        for (int j = 0; j < columnas; j++) {
+            if (j == columna) {
+                continue;
+            }
+            for (int i = 1; i < filas; i++) {
+                submatriz[i - 1][contador] = matriz[i][j];
+            }
+            contador++;
+        }
+        return submatriz;
+    }   
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
